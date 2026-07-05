@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Mentor
 
-## Getting Started
+Chat with AI mentors inspired by India's best programming educators — built with Next.js 15, Google Gemini, and pgvector RAG.
 
-First, run the development server:
+## Mentors
+
+| Mentor | Style |
+|---|---|
+| 🔥 Hitesh Choudhary | Beginner-friendly, first principles, motivational |
+| ⚡ Piyush Garg | Production systems, backend, scalability |
+| 🧠 Suraj Jha | CS fundamentals, trade-offs, analytical |
+| 🎨 Anirudh Jwala | Clean architecture, decoupling, design patterns |
+
+## Stack
+
+- **Next.js 15** (App Router) · **TypeScript** · **Tailwind CSS v4**
+- **Vercel AI SDK** + **Google Gemini 2.5 Flash** (streaming)
+- **Neon PostgreSQL** + **pgvector** (RAG similarity search)
+- **Prisma 6** ORM · **Framer Motion** animations
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Install
+pnpm install
+
+# 2. Set env vars
+cp .env.example .env
+# → Add DATABASE_URL, DIRECT_URL, GEMINI_API_KEY
+
+# 3. Push schema & enable pgvector
+pnpm prisma db push
+node scripts/enable-vector.js
+
+# 4. Seed persona embeddings
+node scripts/generate-avatars.js
+node scripts/ingest-personas.js
+
+# 5. Run
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Env Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+DATABASE_URL="postgresql://...@pooler.neon.tech/neondb?sslmode=require"
+DIRECT_URL="postgresql://...@direct.neon.tech/neondb?sslmode=require"
+GEMINI_API_KEY="AIza..."
+```
 
-## Learn More
+## Routes
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Description |
+|---|---|
+| `/` | Dashboard — mentor cards, stats, recent chats |
+| `/chat` | Chat interface (accepts `?persona=<id>`) |
+| `/api/chat` | Streaming LLM endpoint with RAG |
+| `/api/conversations` | CRUD for chat sessions |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Note:** The AI never claims to be the real person. It is clearly an AI assistant inspired by publicly available educational content.
