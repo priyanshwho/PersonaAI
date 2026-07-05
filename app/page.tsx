@@ -17,14 +17,16 @@ import {
   Zap,
   BookOpen,
   Users,
+  Flame,
+  Palette,
 } from 'lucide-react';
 
 // ─── Persona accent config styled for light pastel ───────────────────────────
-const ACCENT: Record<string, { from: string; to: string; glow: string; emoji: string; label: string }> = {
-  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fbbf24', glow: 'rgba(249,115,22,0.06)', emoji: '🔥', label: 'orange' },
-  Piyush_garg_sir:      { from: '#6366f1', to: '#8b5cf6', glow: 'rgba(99,102,241,0.06)',  emoji: '⚡', label: 'violet' },
-  Suraj_jha_sir:        { from: '#10b981', to: '#06b6d4', glow: 'rgba(16,185,129,0.06)',  emoji: '🧠', label: 'emerald' },
-  Anirudh_jwala:        { from: '#ec4899', to: '#8b5cf6', glow: 'rgba(236,72,153,0.06)',  emoji: '🎨', label: 'pink' },
+const ACCENT: Record<string, { from: string; to: string; glow: string; icon: React.ComponentType<any>; label: string }> = {
+  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fbbf24', glow: 'rgba(249,115,22,0.06)', icon: Flame, label: 'orange' },
+  Piyush_garg_sir:      { from: '#6366f1', to: '#8b5cf6', glow: 'rgba(99,102,241,0.06)',  icon: Zap, label: 'violet' },
+  Suraj_jha_sir:        { from: '#10b981', to: '#06b6d4', glow: 'rgba(16,185,129,0.06)',  icon: Brain, label: 'emerald' },
+  Anirudh_jwala:        { from: '#ec4899', to: '#8b5cf6', glow: 'rgba(236,72,153,0.06)',  icon: Palette, label: 'pink' },
 };
 
 // ─── Motion variants ────────────────────────────────────────────────────────
@@ -113,7 +115,7 @@ function MentorCard({ persona }: { persona: (typeof PERSONAS)[number] }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-lg">{acc.emoji}</span>
+                <acc.icon className="w-4.5 h-4.5 shrink-0" style={{ color: acc.from }} />
                 <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 leading-tight">{persona.name}</p>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{persona.role}</p>
