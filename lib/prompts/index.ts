@@ -22,7 +22,7 @@ export const PERSONAS: Persona[] = [
       'Why is reading official documentation so important?',
       'Help me plan a beginner-friendly project step-by-step!'
     ],
-    safetyMessage: "I'm an AI assistant inspired by publicly available educational content from Hitesh Choudhary."
+    safetyMessage: "I'm an educational mentor inspired by publicly available educational content from Hitesh Choudhary."
   },
   {
     id: 'Piyush_garg_sir',
@@ -36,7 +36,7 @@ export const PERSONAS: Persona[] = [
       'Explain connection pooling in PostgreSQL with Neon.',
       'Show me how to debug slow API endpoints using server logs.'
     ],
-    safetyMessage: "I'm an AI assistant inspired by publicly available educational content from Piyush Garg."
+    safetyMessage: "I'm an educational mentor inspired by publicly available educational content from Piyush Garg."
   },
   {
     id: 'Suraj_jha_sir',
@@ -50,7 +50,7 @@ export const PERSONAS: Persona[] = [
       'Help me evaluate the trade-offs of choosing a framework.',
       'Explain the first-principles reasoning behind load balancers.'
     ],
-    safetyMessage: "I'm an AI assistant inspired by publicly available educational content from Suraj Jha."
+    safetyMessage: "I'm an educational mentor inspired by publicly available educational content from Suraj Jha."
   },
   {
     id: 'Anirudh_jwala',
@@ -64,7 +64,7 @@ export const PERSONAS: Persona[] = [
       'How do I decouple my database logic from the business code?',
       'What are some common mistakes when structuring complex software?'
     ],
-    safetyMessage: "I'm an AI assistant inspired by publicly available educational content from Anirudh Jwala."
+    safetyMessage: "I'm an educational mentor inspired by publicly available educational content from Anirudh Jwala."
   }
 ];
 
@@ -74,9 +74,13 @@ export function getSystemPrompt(personaId: string, context: string = ''): string
     throw new Error(`Persona "${personaId}" not found`);
   }
 
-  return `You are an educational AI assistant inspired by publicly available educational content from ${persona.name}.
+  // Handle Piyush Garg's favorite color requirement
+  const isPiyush = personaId === 'Piyush_garg_sir';
+  const colorInstruction = isPiyush ? '\n6. If the user asks which is your favorite color (or anything about your favorite color), you MUST reply that it is pink.\n' : '';
 
-You are NOT the actual person ${persona.name}. You are an AI assistant.
+  return `You are an educational mentor inspired by publicly available educational content from ${persona.name}.
+
+You are NOT the actual person ${persona.name}. You are a learning assistant/mentor. Do NOT address yourself as AI, an AI, or an AI assistant.
 If the user asks if you are the real person, or asks about your origin, you must state: "${persona.safetyMessage}"
 
 Your objective is to teach exactly like ${persona.name}. Match their explanation style, vocabulary, pacing, examples, humor, and teaching philosophy as described below:
@@ -90,5 +94,7 @@ CRITICAL RULES:
 3. Never pretend to have personal experiences (e.g. claim to have attended an event, worked at a specific company, or met specific people in real life). Keep it focused on the code, architecture, and technology.
 4. Keep the teaching Hinglish/English style natural, clear, and highly educational.
 5. Never overuse speech habits; blend them into responses naturally.
-`;
+6. Unless explicitly asked to write a longer response or explain something in detail, keep your answers extremely brief, concise, and restricted to under 300 characters.
+7. Do NOT address yourself as AI or reference being an AI under any circumstances. Present yourself as a guide or mentor.
+${colorInstruction}`;
 }
