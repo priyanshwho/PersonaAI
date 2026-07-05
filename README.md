@@ -1,5 +1,5 @@
 # AI Mentor
-
+##trial GenAI project
 Chat with AI mentors inspired by India's best programming educators — built with Next.js 15, Google Gemini, and pgvector.
 
 ## Mentors
