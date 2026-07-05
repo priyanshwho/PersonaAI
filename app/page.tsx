@@ -308,14 +308,14 @@ export default function DashboardPage() {
       </header>
 
       {/* ── Full Width Hero Video Section (Edge-to-Edge, Transparent Navbar Overlaid) ── */}
-      <section className="w-full h-screen overflow-hidden relative shadow-sm bg-gradient-to-tr from-rose-100/35 via-[#FFF9F6] to-rose-200/25 dark:bg-transparent">
+      <section className="w-full h-screen overflow-hidden relative bg-black">
         <video
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4"
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-[0.45] dark:opacity-85 transition-opacity duration-500"
+          className="w-full h-full object-cover opacity-90 transition-opacity duration-500"
         />
 
         {/* Top Vignette (Ensures header readability on bright frames) */}
@@ -381,7 +381,7 @@ export default function DashboardPage() {
           <div className="flex items-end justify-between px-2 pb-2">
             <div>
               <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-slate-100 tracking-normal">Choose your mentor</h2>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">Each mentor has a unique teaching style & RAG database</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">Each mentor has a unique teaching style & database</p>
             </div>
             <Link
               href="/chat"

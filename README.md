@@ -1,6 +1,6 @@
 # AI Mentor
 
-Chat with AI mentors inspired by India's best programming educators — built with Next.js 15, Google Gemini, and pgvector RAG.
+Chat with AI mentors inspired by India's best programming educators — built with Next.js 15, Google Gemini, and pgvector.
 
 ## Mentors
 
@@ -15,7 +15,7 @@ Chat with AI mentors inspired by India's best programming educators — built wi
 
 - **Next.js 15** (App Router) · **TypeScript** · **Tailwind CSS v4**
 - **Vercel AI SDK** + **Google Gemini 3.1 flash preview Flash** (streaming)
-- **Neon PostgreSQL** + **pgvector** (RAG similarity search)
+- **Neon PostgreSQL** + **pgvector** (similarity search)
 - **Prisma 6** ORM · **Framer Motion** animations
 
 ## Quick Start
@@ -56,7 +56,7 @@ GEMINI_API_KEY="AIza..."
 |---|---|
 | `/` | Dashboard — mentor cards, stats, recent chats |
 | `/chat` | Chat interface (accepts `?persona=<id>`) |
-| `/api/chat` | Streaming LLM endpoint with RAG |
+| `/api/chat` | Streaming LLM endpoint |
 | `/api/conversations` | CRUD for chat sessions |
 
 > **Note:** The AI never claims to be the real person. It is clearly an AI assistant inspired by publicly available educational content.
