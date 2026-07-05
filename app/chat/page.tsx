@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '../../components/sidebar';
 import { ChatWindow } from '../../components/chat-window';
+import { GradientBackground } from '../../components/ui/gradient-backgrounds';
 import { PERSONAS } from '../../lib/prompts';
 
 interface Message {

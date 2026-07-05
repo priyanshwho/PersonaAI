@@ -2,21 +2,41 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { RadialGlowBackground } from '../components/ui/radial-glow-background';
 import { PERSONAS } from '../lib/prompts';
 import {
   Brain,
   MessageSquare,
-  Zap,
-  BookOpen,
   ArrowRight,
   Sparkles,
   Clock,
   ChevronRight,
   Moon,
   Sun,
+  Zap,
+  BookOpen,
+  Users,
 } from 'lucide-react';
 
-// ── Minimal theme toggle ──────────────────────────────────────────────────────
+// ─── Persona accent config ──────────────────────────────────────────────────
+const ACCENT: Record<string, { from: string; to: string; glow: string; emoji: string; label: string }> = {
+  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fbbf24', glow: 'rgba(249,115,22,0.18)', emoji: '🔥', label: 'orange' },
+  Piyush_garg_sir:      { from: '#6366f1', to: '#8b5cf6', glow: 'rgba(99,102,241,0.18)',  emoji: '⚡', label: 'violet' },
+  Suraj_jha_sir:        { from: '#10b981', to: '#06b6d4', glow: 'rgba(16,185,129,0.18)',  emoji: '🧠', label: 'emerald' },
+  Anirudh_jwala:        { from: '#8b5cf6', to: '#ec4899', glow: 'rgba(139,92,246,0.18)',  emoji: '🎨', label: 'purple' },
+};
+
+// ─── Motion variants ────────────────────────────────────────────────────────
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show:   { opacity: 1, y: 0,  transition: { duration: 0.55, ease: 'easeOut' as const } },
+};
+const stagger = {
+  show: { transition: { staggerChildren: 0.09 } },
+};
+
+// ─── Theme toggle ────────────────────────────────────────────────────────────
 function ThemeToggle() {
   const [dark, setDark] = React.useState(false);
   React.useEffect(() => {
@@ -34,40 +54,143 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label="Toggle theme"
-      className="p-2 rounded-xl border border-border bg-card hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-150"
+      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="w-9 h-9 flex items-center justify-center rounded-xl glass hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-200"
     >
       {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>
   );
 }
 
-// ── Persona accent colours (one per mentor) ───────────────────────────────────
-const PERSONA_META: Record<string, { from: string; to: string; emoji: string }> = {
-  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fb923c', emoji: '🔥' },
-  Piyush_garg_sir:      { from: '#6366f1', to: '#818cf8', emoji: '⚡' },
-  Suraj_jha_sir:        { from: '#10b981', to: '#34d399', emoji: '🧠' },
-  Anirudh_jwala:        { from: '#8b5cf6', to: '#a78bfa', emoji: '🎨' },
-};
-
-// ── Stat card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub: string }) {
+// ─── Stat pill ───────────────────────────────────────────────────────────────
+function StatPill({ icon: Icon, value, label }: { icon: React.ElementType; value: string; label: string }) {
   return (
-    <div className="flex-1 min-w-0 rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
-      <div className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
+    <motion.div
+      variants={fadeUp}
+      className="flex items-center gap-3 px-5 py-3.5 rounded-2xl glass"
+    >
+      <div className="w-8 h-8 rounded-xl bg-secondary/80 flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4 text-muted-foreground" />
       </div>
-      <p className="text-2xl font-bold tabular-nums text-foreground">{value}</p>
-      <p className="text-xs font-medium text-foreground leading-snug">{label}</p>
-      <p className="text-xs text-muted-foreground">{sub}</p>
-    </div>
+      <div>
+        <p className="text-lg font-bold text-foreground leading-none tabular-nums">{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+      </div>
+    </motion.div>
   );
 }
 
-// ── Recent conversation pill ──────────────────────────────────────────────────
+// ─── Mentor card ─────────────────────────────────────────────────────────────
+function MentorCard({ persona, index }: { persona: (typeof PERSONAS)[number]; index: number }) {
+  const acc = ACCENT[persona.id] ?? ACCENT['Hitesh_chaudhary_sir'];
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <motion.div variants={fadeUp}>
+      <Link
+        href={`/chat?persona=${persona.id}`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="group relative flex flex-col h-full rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
+        style={{
+          boxShadow: hovered
+            ? `0 20px 60px -10px ${acc.glow}, 0 0 0 1px color-mix(in srgb, var(--border) 60%, transparent)`
+            : `0 1px 2px 0 rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent)`,
+        }}
+      >
+        {/* Glass card background */}
+        <div className="absolute inset-0 glass rounded-3xl" />
+
+        {/* Gradient top accent bar */}
+        <div
+          className="relative h-1 w-full rounded-t-3xl"
+          style={{ background: `linear-gradient(90deg, ${acc.from}, ${acc.to})` }}
+        />
+
+        {/* Ambient glow blob (visible on hover) */}
+        <motion.div
+          className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl pointer-events-none"
+          style={{ background: acc.glow }}
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+        />
+
+        {/* Content */}
+        <div className="relative flex flex-col gap-4 p-6 flex-1">
+          {/* Avatar + name row */}
+          <div className="flex items-start gap-4">
+            <div
+              className="relative w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-border/50"
+              style={{ background: `linear-gradient(135deg, ${acc.from}22, ${acc.to}33)` }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={persona.avatar}
+                alt={persona.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg">{acc.emoji}</span>
+                <p className="text-sm font-bold text-foreground leading-tight">{persona.name}</p>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{persona.role}</p>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{persona.description}</p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5">
+            {persona.tags.slice(0, 3).map(tag => (
+              <span
+                key={tag}
+                className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                style={{
+                  background: `${acc.from}18`,
+                  color: acc.from,
+                  border: `1px solid ${acc.from}30`,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Sample question */}
+          <div className="mt-auto pt-4 border-t border-border/40">
+            <p className="text-[11px] text-muted-foreground/80 italic line-clamp-2">
+              &ldquo;{persona.suggestedQuestions[0]}&rdquo;
+            </p>
+          </div>
+        </div>
+
+        {/* CTA footer */}
+        <div className="relative px-6 pb-6">
+          <div
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl text-xs font-bold text-white transition-all duration-200 group-hover:brightness-105 group-hover:shadow-md"
+            style={{ background: `linear-gradient(135deg, ${acc.from}, ${acc.to})` }}
+          >
+            Start Learning
+            <motion.span
+              animate={{ x: hovered ? 4 : 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+            </motion.span>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+// ─── Recent conversation row ─────────────────────────────────────────────────
 interface Conv { id: string; title: string; persona: string; updatedAt: string }
-function ConvRow({ conv }: { conv: Conv }) {
-  const meta = PERSONA_META[conv.persona] ?? PERSONA_META['Hitesh_chaudhary_sir'];
+function ConvRow({ conv, index }: { conv: Conv; index: number }) {
+  const acc = ACCENT[conv.persona] ?? ACCENT['Hitesh_chaudhary_sir'];
   const persona = PERSONAS.find(p => p.id === conv.persona);
   const ago = (() => {
     const diff = Date.now() - new Date(conv.updatedAt).getTime();
@@ -78,224 +201,239 @@ function ConvRow({ conv }: { conv: Conv }) {
     return `${Math.floor(hrs / 24)}d ago`;
   })();
   return (
-    <Link
-      href={`/chat?persona=${conv.persona}`}
-      className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-all duration-150 group"
+    <motion.div
+      variants={fadeUp}
+      custom={index}
     >
-      {/* avatar */}
-      <div
-        className="w-9 h-9 rounded-full shrink-0 overflow-hidden border border-border"
-        style={{ background: `linear-gradient(135deg, ${meta.from}, ${meta.to})` }}
+      <Link
+        href={`/chat?persona=${conv.persona}`}
+        className="flex items-center gap-3.5 px-4 py-3 rounded-2xl hover:bg-secondary/50 transition-all duration-150 group"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={persona?.avatar} alt={persona?.name} className="w-full h-full object-cover" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-foreground truncate">{conv.title}</p>
-        <p className="text-xs text-muted-foreground truncate">{persona?.name}</p>
-      </div>
-      <div className="flex items-center gap-1.5 shrink-0">
-        <span className="text-xs text-muted-foreground">{ago}</span>
-        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-      </div>
-    </Link>
-  );
-}
-
-// ── Mentor card ───────────────────────────────────────────────────────────────
-function MentorCard({ persona }: { persona: (typeof PERSONAS)[number] }) {
-  const meta = PERSONA_META[persona.id] ?? PERSONA_META['Hitesh_chaudhary_sir'];
-  return (
-    <Link
-      href={`/chat?persona=${persona.id}`}
-      className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
-    >
-      {/* gradient strip */}
-      <div
-        className="h-1.5 w-full"
-        style={{ background: `linear-gradient(90deg, ${meta.from}, ${meta.to})` }}
-      />
-
-      <div className="p-5 flex flex-col gap-4 flex-1">
-        {/* header row */}
-        <div className="flex items-start gap-3">
-          <div
-            className="w-12 h-12 rounded-2xl shrink-0 overflow-hidden border border-border"
-            style={{ background: `linear-gradient(135deg, ${meta.from}22, ${meta.to}33)` }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={persona.avatar} alt={persona.name} className="w-full h-full object-cover" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-foreground">{persona.name}</p>
-            <p className="text-xs text-muted-foreground leading-snug mt-0.5">{persona.role}</p>
-          </div>
-          <span className="text-xl">{meta.emoji}</span>
-        </div>
-
-        {/* description */}
-        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{persona.description}</p>
-
-        {/* tags */}
-        <div className="flex flex-wrap gap-1.5">
-          {persona.tags.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-border bg-secondary text-muted-foreground"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* sample question */}
-        <div className="mt-auto pt-3 border-t border-border/60">
-          <p className="text-[11px] text-muted-foreground italic line-clamp-2">
-            &ldquo;{persona.suggestedQuestions[0]}&rdquo;
-          </p>
-        </div>
-      </div>
-
-      {/* hover CTA */}
-      <div className="px-5 pb-5">
         <div
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold text-white transition-all duration-150 group-hover:brightness-110"
-          style={{ background: `linear-gradient(90deg, ${meta.from}, ${meta.to})` }}
+          className="w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-border/50"
+          style={{ background: `linear-gradient(135deg, ${acc.from}22, ${acc.to}33)` }}
         >
-          Start Learning <ArrowRight className="w-3.5 h-3.5" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={persona?.avatar} alt={persona?.name} className="w-full h-full object-cover" />
         </div>
-      </div>
-    </Link>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{conv.title}</p>
+          <p className="text-xs text-muted-foreground">{persona?.name}</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 text-muted-foreground">
+          <span className="text-xs">{ago}</span>
+          <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-150" />
+        </div>
+      </Link>
+    </motion.div>
   );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+// ─── Dashboard page ──────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [conversations, setConversations] = React.useState<Conv[]>([]);
-  const [loadingConvs, setLoadingConvs] = React.useState(true);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     fetch('/api/conversations')
       .then(r => r.json())
-      .then(data => setConversations(Array.isArray(data) ? data : []))
+      .then(d => setConversations(Array.isArray(d) ? d : []))
       .catch(() => setConversations([]))
-      .finally(() => setLoadingConvs(false));
+      .finally(() => setLoading(false));
   }, []);
 
-  const totalConvs = conversations.length;
+  const totalConvs  = conversations.length;
   const mentorsUsed = new Set(conversations.map(c => c.persona)).size;
-  const recent = conversations.slice(0, 5);
+  const recent      = conversations.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* ── NAV ── */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+    <RadialGlowBackground className="min-h-screen" glowColor="rgba(99, 102, 241, 0.15)">
+
+      {/* ── Nav ── */}
+      <header className="sticky top-0 z-40 glass border-b border-border/50">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
               <Brain className="w-4 h-4 text-background" />
             </div>
-            <span className="font-bold text-sm text-foreground">AI Mentor</span>
+            <span className="font-bold text-sm tracking-tight text-foreground">AI Mentor</span>
           </div>
+
+          {/* Actions */}
           <div className="flex items-center gap-2">
             <Link
               href="/chat"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-90 transition-all duration-150"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-85 active:scale-95 transition-all duration-150 shadow-sm"
             >
-              <MessageSquare className="w-3.5 h-3.5" /> Open Chat
+              <MessageSquare className="w-3.5 h-3.5" />
+              Open Chat
             </Link>
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-12">
-        {/* ── HERO ── */}
-        <section className="text-center space-y-4 pt-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border bg-secondary text-muted-foreground text-xs font-semibold">
-            <Sparkles className="w-3 h-3" /> Powered by Google Gemini 2.5 Flash
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">
-            Learn from the Best.<br />
-            <span className="bg-gradient-to-r from-orange-500 via-violet-500 to-emerald-500 bg-clip-text text-transparent">
-              On your terms.
+      <main id="main-content" className="relative max-w-6xl mx-auto px-6 py-16 space-y-20">
+
+        {/* ── Hero ── */}
+        <motion.section
+          initial="hidden"
+          animate="show"
+          variants={stagger}
+          className="text-center space-y-6"
+        >
+          <motion.div variants={fadeUp}>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass text-xs font-semibold text-muted-foreground border-0">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              Powered by Google Gemini 2.5 Flash · pgvector RAG
             </span>
-          </h1>
-          <p className="max-w-xl mx-auto text-base text-muted-foreground leading-relaxed">
-            Chat with AI mentors inspired by India's best programming educators.
-            Each mentor brings a unique teaching style — from first-principles to production-ready systems.
-          </p>
-          <div className="flex items-center justify-center gap-3 pt-2">
+          </motion.div>
+
+          <motion.h1
+            variants={fadeUp}
+            className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-foreground"
+          >
+            Learn from<br />
+            <span
+              className="gradient-text"
+              style={{ backgroundImage: 'linear-gradient(135deg, #f97316 0%, #8b5cf6 50%, #10b981 100%)' }}
+            >
+              the best minds.
+            </span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="max-w-lg mx-auto text-base md:text-lg text-muted-foreground leading-relaxed"
+          >
+            AI mentors inspired by India&rsquo;s top programming educators —
+            each with a distinct teaching philosophy, streamed in real-time.
+          </motion.p>
+
+          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 pt-2">
             <Link
               href="/chat"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-150"
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-foreground text-background text-sm font-bold hover:opacity-85 active:scale-95 transition-all duration-200 shadow-lg"
             >
               Get Started <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/chat?persona=Suraj_jha_sir"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm font-semibold hover:bg-secondary active:scale-95 transition-all duration-150"
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass text-foreground text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all duration-200"
             >
               <BookOpen className="w-4 h-4" /> Explore Mentors
             </Link>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
 
-        {/* ── STATS ── */}
-        <section className="flex flex-col sm:flex-row gap-3">
-          <StatCard icon={MessageSquare} label="Total conversations" value={String(totalConvs)} sub={totalConvs === 0 ? 'Start your first chat!' : 'Keep it up!'} />
-          <StatCard icon={Brain} label="Mentors used" value={`${mentorsUsed} / 4`} sub="Try all four teaching styles" />
-          <StatCard icon={Zap} label="AI responses" value={totalConvs > 0 ? `${totalConvs * 3}+` : '0'} sub="Streamed in real-time" />
-          <StatCard icon={BookOpen} label="Knowledge sources" value="4" sub="Persona-specific RAG context" />
-        </section>
+        {/* ── Stats ── */}
+        <motion.section
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={stagger}
+          className="grid grid-cols-2 md:grid-cols-4 gap-3"
+        >
+          <StatPill icon={MessageSquare} value={String(totalConvs)}       label="Total conversations" />
+          <StatPill icon={Users}         value={`${mentorsUsed} / 4`}     label="Mentors explored" />
+          <StatPill icon={Zap}           value={totalConvs > 0 ? `${totalConvs * 3}+` : '0'} label="AI responses" />
+          <StatPill icon={BookOpen}      value="4"                         label="Knowledge sources" />
+        </motion.section>
 
-        {/* ── MENTORS GRID ── */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
+        {/* ── Mentor grid ── */}
+        <section className="space-y-6">
+          <div className="flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-bold text-foreground">Choose your Mentor</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Click any card to start a conversation</p>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">Choose your mentor</h2>
+              <p className="text-sm text-muted-foreground mt-1">Each mentor has a unique teaching style</p>
             </div>
-            <Link href="/chat" className="text-xs text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1 transition-colors">
-              Open Chat <ChevronRight className="w-3.5 h-3.5" />
+            <Link
+              href="/chat"
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors duration-150"
+            >
+              Open chat <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PERSONAS.map(p => <MentorCard key={p.id} persona={p} />)}
-          </div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={stagger}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {PERSONAS.map((p, i) => (
+              <MentorCard key={p.id} persona={p} index={i} />
+            ))}
+          </motion.div>
         </section>
 
-        {/* ── RECENT CONVERSATIONS ── */}
-        <section className="space-y-4 pb-10">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <h2 className="text-lg font-bold text-foreground">Recent Conversations</h2>
-          </div>
+        {/* ── Recent conversations ── */}
+        <motion.section
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={stagger}
+          className="space-y-5 pb-20"
+        >
+          <motion.div variants={fadeUp} className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center">
+                <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Recent conversations</h2>
+            </div>
+            {recent.length > 0 && (
+              <Link href="/chat" className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-150 flex items-center gap-1">
+                View all <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </motion.div>
 
-          <div className="rounded-2xl border border-border bg-card overflow-hidden">
-            {loadingConvs ? (
-              <div className="p-8 text-center text-sm text-muted-foreground animate-pulse">Loading…</div>
+          <motion.div variants={fadeUp} className="rounded-3xl glass overflow-hidden">
+            {loading ? (
+              <div className="p-10 space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-12 rounded-xl animate-shimmer rounded-2xl" style={{ animationDelay: `${i * 0.15}s` }} />
+                ))}
+              </div>
             ) : recent.length === 0 ? (
-              <div className="p-10 flex flex-col items-center gap-3 text-center">
-                <MessageSquare className="w-8 h-8 text-muted-foreground/40" />
-                <p className="text-sm font-semibold text-muted-foreground">No conversations yet</p>
-                <p className="text-xs text-muted-foreground">Choose a mentor above to get started!</p>
+              <div className="p-14 flex flex-col items-center gap-4 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center">
+                  <MessageSquare className="w-6 h-6 text-muted-foreground/50" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">No conversations yet</p>
+                  <p className="text-xs text-muted-foreground mt-1">Pick a mentor above to start learning</p>
+                </div>
+                <Link
+                  href="/chat"
+                  className="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-85 active:scale-95 transition-all duration-150"
+                >
+                  Start your first chat <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             ) : (
-              <div className="divide-y divide-border p-2">
-                {recent.map(c => <ConvRow key={c.id} conv={c} />)}
-              </div>
+              <motion.div
+                variants={stagger}
+                className="p-2 divide-y divide-border/40"
+              >
+                {recent.map((c, i) => <ConvRow key={c.id} conv={c} index={i} />)}
+              </motion.div>
             )}
+
             {recent.length > 0 && (
-              <div className="border-t border-border p-3 text-center">
-                <Link href="/chat" className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                  View all in Chat →
+              <div className="border-t border-border/40 p-3 text-center">
+                <Link href="/chat" className="text-xs text-muted-foreground hover:text-foreground font-semibold transition-colors">
+                  View all conversations →
                 </Link>
               </div>
             )}
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
+
       </main>
-    </div>
+    </RadialGlowBackground>
   );
 }
