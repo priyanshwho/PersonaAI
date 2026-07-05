@@ -41,37 +41,44 @@ export function Sidebar({
 
   return (
     <motion.aside
-      className="h-screen bg-card/40 backdrop-blur-md border-r border-border/50 flex flex-col z-30 shrink-0 select-none relative"
+      className="h-screen bg-[#FDF0EC]/60 dark:bg-[#0d0d0f]/60 backdrop-blur-xl border-r border-border/30 flex flex-col z-30 shrink-0 select-none relative"
       animate={{ width: isCollapsed ? 64 : 280 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
-      {/* Header with Brand Logo & Dashboard navigation */}
+      {/* Header with Brand Logo & Collapse trigger */}
       <div className="p-4 flex items-center justify-between border-b border-border/40 min-h-16 shrink-0">
         {!isCollapsed ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex items-center gap-2.5 font-bold text-sm tracking-tight text-foreground"
-          >
-            <Bot className="w-5 h-5 text-primary" />
-            <span>AI Mentor</span>
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2.5 font-bold text-sm tracking-tight text-foreground"
+            >
+              <Bot className="w-5 h-5 text-primary" />
+              <span>AI Mentor</span>
+            </motion.div>
+            
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="p-1.5 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden"
+              aria-label="Collapse sidebar"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+          </>
         ) : (
           <div className="w-full flex justify-center">
-            <Bot className="w-5 h-5 text-primary" />
+            <button
+              onClick={() => setIsCollapsed(false)}
+              className="p-1.5 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden"
+              aria-label="Expand sidebar"
+              title="Expand sidebar"
+            >
+              <PanelLeft className="w-4 h-4" />
+            </button>
           </div>
-        )}
-
-        {!isCollapsed && (
-          <Link
-            href="/"
-            className="p-1.5 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150"
-            aria-label="Go to Dashboard"
-            title="Dashboard"
-          >
-            <LayoutDashboard className="w-4 h-4" />
-          </Link>
         )}
       </div>
 
@@ -187,7 +194,7 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Footer controls: Theme toggle, settings and Sidebar Collapse button */}
+      {/* Footer controls: Theme toggle & Dashboard navigation */}
       <div className="p-3 border-t border-border/40 flex flex-col gap-2 mt-auto shrink-0">
         <div className="flex items-center justify-between">
           {/* Theme Switcher */}
@@ -204,14 +211,20 @@ export function Sidebar({
             )}
           </button>
 
-          {/* Collapsible Action Trigger (Shadcn spec PanelLeft Close) */}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          {/* Go to Dashboard button */}
+          <Link
+            href="/"
+            className="p-2 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden relative group"
+            aria-label="Go to Dashboard"
+            title="Go to Dashboard"
           >
-            {isCollapsed ? <PanelLeft className="w-4.5 h-4.5" /> : <PanelLeftClose className="w-4.5 h-4.5" />}
-          </button>
+            <LayoutDashboard className="w-4.5 h-4.5" />
+            {isCollapsed && (
+              <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-popover border border-border text-popover-foreground text-xs py-1.5 px-2.5 rounded-lg shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 whitespace-nowrap z-50 font-semibold">
+                Dashboard
+              </div>
+            )}
+          </Link>
         </div>
       </div>
     </motion.aside>

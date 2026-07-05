@@ -46,11 +46,47 @@ export function GradientBackground({
 
   return (
     <div
-      className={`relative w-full h-full overflow-hidden bg-background transition-colors duration-500 ${className || ''}`}
+      className={`relative w-full h-full overflow-hidden bg-[#FFF5F2] dark:bg-gradient-to-tr dark:from-[#070708] dark:via-[#0d060a] dark:to-[#1b0812] transition-colors duration-500 ${className || ''}`}
       {...props}
     >
       {/* Dynamic Mesh Gradients */}
       <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Light Mode Rosy Creamy Blurry Blobs */}
+        <div className="absolute inset-0 pointer-events-none z-0 dark:hidden">
+          {/* Blob 1: Soft Peach/Rose behind sidebar */}
+          <div
+            className="absolute rounded-full blur-[120px] opacity-80"
+            style={{
+              width: '35vw',
+              height: '35vw',
+              top: '10%',
+              left: '-10%',
+              background: 'radial-gradient(circle, rgba(254, 200, 190, 0.7) 0%, rgba(254, 200, 190, 0) 70%)',
+            }}
+          />
+          {/* Blob 2: Soft Rose at bottom right */}
+          <div
+            className="absolute rounded-full blur-[140px] opacity-75"
+            style={{
+              width: '40vw',
+              height: '40vw',
+              bottom: '10%',
+              right: '5%',
+              background: 'radial-gradient(circle, rgba(253, 224, 217, 0.5) 0%, rgba(253, 224, 217, 0) 70%)',
+            }}
+          />
+          {/* Blob 3: Soft Lavender/Pink at center */}
+          <div
+            className="absolute rounded-full blur-[120px] opacity-60"
+            style={{
+              width: '35vw',
+              height: '35vw',
+              top: '30%',
+              right: '25%',
+              background: 'radial-gradient(circle, rgba(245, 230, 255, 0.7) 0%, rgba(245, 230, 255, 0) 70%)',
+            }}
+          />
+        </div>
         {/* Top-Right moving blob */}
         <div
           className="absolute rounded-full blur-[130px] transition-all duration-700 ease-in-out"

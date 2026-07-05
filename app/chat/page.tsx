@@ -271,7 +271,7 @@ function ChatPageInner() {
   };
 
   return (
-    <GradientBackground personaId={activePersonaId} className="flex h-screen w-screen overflow-hidden bg-background text-foreground transition-colors duration-200">
+    <GradientBackground personaId={activePersonaId} className="flex h-screen w-screen overflow-hidden text-foreground transition-colors duration-200">
       {/* Collapsible Sidebar */}
       <Sidebar
         activePersonaId={activePersonaId}

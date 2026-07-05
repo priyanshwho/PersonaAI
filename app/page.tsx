@@ -237,7 +237,32 @@ export default function DashboardPage() {
   const recent      = conversations.slice(0, 5);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-tr from-rose-100/10 via-slate-50/80 dark:via-zinc-950 to-violet-100/10 font-sans transition-colors duration-200">
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-tr from-[#FFF5F2] via-[#FFF9F6] to-[#FFEBE6] dark:from-[#070708] dark:via-[#0d060a] dark:to-[#1b0812] font-sans transition-colors duration-200">
+      
+      {/* ── Ambient Background Glow Blobs (Clipped by wrapper overflow-x-hidden) ── */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Blob 1: Behind Mentor Grid left */}
+        <div 
+          className="absolute top-[120vh] left-[-15%] w-[50vw] h-[50vw] rounded-full blur-[160px] opacity-75 dark:opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(244,63,94,0.09) 0%, rgba(244,63,94,0) 70%)',
+          }}
+        />
+        {/* Blob 2: Behind Mentor Grid right */}
+        <div 
+          className="absolute top-[160vh] right-[-15%] w-[45vw] h-[45vw] rounded-full blur-[140px] opacity-70 dark:opacity-30"
+          style={{
+            background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0) 70%)',
+          }}
+        />
+        {/* Blob 3: Behind Recent Conversations */}
+        <div 
+          className="absolute bottom-[5%] left-[5%] w-[40vw] h-[40vw] rounded-full blur-[140px] opacity-60 dark:opacity-35"
+          style={{
+            background: 'radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(16,185,129,0) 70%)',
+          }}
+        />
+      </div>
       
       {/* ── Dynamic Header (Fades from Transparent to Frosted Glass on scroll) ── */}
       <header
@@ -282,15 +307,15 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* ── Full Height Hero Video Section (Edge-to-Edge, Transparent Navbar Overlaid) ── */}
-      <section className="w-full h-screen overflow-hidden relative shadow-sm">
+      {/* ── Full Width Hero Video Section (Edge-to-Edge, Transparent Navbar Overlaid) ── */}
+      <section className="w-full h-screen overflow-hidden relative shadow-sm bg-gradient-to-tr from-rose-100/35 via-[#FFF9F6] to-rose-200/25 dark:bg-transparent">
         <video
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4"
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-[0.45] dark:opacity-85 transition-opacity duration-500"
         />
 
         {/* Top Vignette (Ensures header readability on bright frames) */}
@@ -331,7 +356,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Bottom smooth blending gradient fading into the page's pastel/dark background */}
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-50 dark:from-zinc-950 via-slate-50/75 dark:via-zinc-950/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#FFF5F2] dark:from-[#070708] via-[#FFF5F2]/75 dark:via-[#070708]/75 to-transparent pointer-events-none" />
       </section>
 
       {/* Main Content Area with Generous Spacing / Breathing Space */}

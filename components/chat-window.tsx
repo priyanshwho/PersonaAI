@@ -119,7 +119,7 @@ export function ChatWindow({
       tabIndex={-1}
     >
       {/* Mentor Top Nav Header */}
-      <header className="p-4 border-b border-border flex items-center justify-between bg-card/50 backdrop-blur-md min-h-16 z-10 shrink-0">
+      <header className="py-2.5 px-4 border-b border-border/20 flex items-center justify-between bg-transparent min-h-14 z-10 shrink-0">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -248,13 +248,7 @@ export function ChatWindow({
 
                     {/* Latency and Action triggers inside bubble */}
                     {!isUser && (
-                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/30 text-2xs text-muted-foreground">
-                        <span>
-                          {latency && idxOf(messages, message.id) === messages.length - 1
-                            ? `Response generated in ${(latency / 1000).toFixed(2)}s`
-                            : ''}
-                        </span>
-
+                      <div className="flex items-center justify-end mt-3 pt-2 border-t border-border/30 text-2xs text-muted-foreground">
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                           <button
                             onClick={() => copyToClipboard(message.content, message.id)}
