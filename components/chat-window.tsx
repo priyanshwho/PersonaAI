@@ -98,7 +98,7 @@ export function ChatWindow({
 
   return (
     <section
-      className="flex-1 flex flex-col h-screen bg-background relative focus:outline-hidden"
+      className="flex-1 flex flex-col h-screen bg-transparent relative focus:outline-hidden"
       id="main-content"
       tabIndex={-1}
     >
