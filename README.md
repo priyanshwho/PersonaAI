@@ -46,7 +46,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ```env
 DATABASE_URL="postgresql://...@pooler.neon.tech/neondb?sslmode=require"
-DIRECT_URL="postgresql://...@direct.neon.tech/neondb?sslmode=require"
+
 GEMINI_API_KEY="AIza..."
 ```
 
