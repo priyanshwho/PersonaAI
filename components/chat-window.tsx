@@ -60,17 +60,33 @@ export function ChatWindow({
   
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const activePersona = PERSONAS.find((p) => p.id === activePersonaId) || PERSONAS[0];
 
-  // Auto-scroll
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Auto-scroll logic with auto-fallback for active typing/streaming
+  const scrollToBottom = React.useCallback((behavior: 'smooth' | 'auto' = 'smooth') => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      setTimeout(() => {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior,
+        });
+      }, 30);
+    }
+  }, []);
 
   React.useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+    scrollToBottom(isLoading ? 'auto' : 'smooth');
+  }, [messages, isLoading, scrollToBottom]);
+
+  // Reset scroll to top when active persona changes
+  React.useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [activePersonaId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,7 +151,7 @@ export function ChatWindow({
       </header>
 
       {/* Main Messages View Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6" ref={scrollContainerRef}>
         {messages.length === 0 ? (
           // Welcome Screen with ProfileCard and Suggested Questions
           <div className="max-w-2xl mx-auto py-12 flex flex-col justify-center">

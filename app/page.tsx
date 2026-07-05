@@ -3,8 +3,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { RadialGlowBackground } from '../components/ui/radial-glow-background';
 import { PERSONAS } from '../lib/prompts';
+import { useTheme } from '../components/theme-provider';
 import {
   Brain,
   MessageSquare,
@@ -19,45 +19,40 @@ import {
   Users,
 } from 'lucide-react';
 
-// ─── Persona accent config ──────────────────────────────────────────────────
+// ─── Persona accent config styled for light pastel ───────────────────────────
 const ACCENT: Record<string, { from: string; to: string; glow: string; emoji: string; label: string }> = {
-  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fbbf24', glow: 'rgba(249,115,22,0.18)', emoji: '🔥', label: 'orange' },
-  Piyush_garg_sir:      { from: '#6366f1', to: '#8b5cf6', glow: 'rgba(99,102,241,0.18)',  emoji: '⚡', label: 'violet' },
-  Suraj_jha_sir:        { from: '#10b981', to: '#06b6d4', glow: 'rgba(16,185,129,0.18)',  emoji: '🧠', label: 'emerald' },
-  Anirudh_jwala:        { from: '#8b5cf6', to: '#ec4899', glow: 'rgba(139,92,246,0.18)',  emoji: '🎨', label: 'purple' },
+  Hitesh_chaudhary_sir: { from: '#f97316', to: '#fbbf24', glow: 'rgba(249,115,22,0.06)', emoji: '🔥', label: 'orange' },
+  Piyush_garg_sir:      { from: '#6366f1', to: '#8b5cf6', glow: 'rgba(99,102,241,0.06)',  emoji: '⚡', label: 'violet' },
+  Suraj_jha_sir:        { from: '#10b981', to: '#06b6d4', glow: 'rgba(16,185,129,0.06)',  emoji: '🧠', label: 'emerald' },
+  Anirudh_jwala:        { from: '#ec4899', to: '#8b5cf6', glow: 'rgba(236,72,153,0.06)',  emoji: '🎨', label: 'pink' },
 };
 
 // ─── Motion variants ────────────────────────────────────────────────────────
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0,  transition: { duration: 0.55, ease: 'easeOut' as const } },
+  hidden: { opacity: 0, y: 20 },
+  show:   { opacity: 1, y: 0,  transition: { duration: 0.6, ease: 'easeOut' as const } },
 };
 const stagger = {
-  show: { transition: { staggerChildren: 0.09 } },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
-// ─── Theme toggle ────────────────────────────────────────────────────────────
-function ThemeToggle() {
-  const [dark, setDark] = React.useState(false);
-  React.useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    setDark(isDark);
-    document.documentElement.classList.toggle('dark', isDark);
-  }, []);
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-  };
+// ─── Theme toggle (uses single central theme state) ──────────────────────────
+interface ThemeToggleProps {
+  scrolled: boolean;
+}
+function ThemeToggle({ scrolled }: ThemeToggleProps) {
+  const { theme, toggleTheme } = useTheme();
   return (
     <button
-      onClick={toggle}
-      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="w-9 h-9 flex items-center justify-center rounded-xl glass hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-200"
+      onClick={toggleTheme}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      className={`w-9 h-9 flex items-center justify-center rounded-xl border transition-all duration-200 shadow-sm ${
+        scrolled
+          ? 'bg-white/80 dark:bg-zinc-800/45 border-white/90 dark:border-zinc-700/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+      }`}
     >
-      {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>
   );
 }
@@ -67,21 +62,21 @@ function StatPill({ icon: Icon, value, label }: { icon: React.ElementType; value
   return (
     <motion.div
       variants={fadeUp}
-      className="flex items-center gap-3 px-5 py-3.5 rounded-2xl glass"
+      className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/70 dark:bg-zinc-900/40 border border-white/80 dark:border-zinc-800/50 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.015)]"
     >
-      <div className="w-8 h-8 rounded-xl bg-secondary/80 flex items-center justify-center shrink-0">
-        <Icon className="w-4 h-4 text-muted-foreground" />
+      <div className="w-9 h-9 rounded-xl bg-white/80 dark:bg-zinc-800/60 border border-white/90 dark:border-zinc-700/70 flex items-center justify-center shrink-0">
+        <Icon className="w-4.5 h-4.5 text-slate-550 dark:text-slate-400" />
       </div>
       <div>
-        <p className="text-lg font-bold text-foreground leading-none tabular-nums">{value}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+        <p className="text-xl font-bold text-slate-800 dark:text-slate-200 leading-none tabular-nums">{value}</p>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-slate-550 dark:text-slate-400 mt-1.5">{label}</p>
       </div>
     </motion.div>
   );
 }
 
 // ─── Mentor card ─────────────────────────────────────────────────────────────
-function MentorCard({ persona, index }: { persona: (typeof PERSONAS)[number]; index: number }) {
+function MentorCard({ persona }: { persona: (typeof PERSONAS)[number] }) {
   const acc = ACCENT[persona.id] ?? ACCENT['Hitesh_chaudhary_sir'];
   const [hovered, setHovered] = React.useState(false);
 
@@ -91,37 +86,23 @@ function MentorCard({ persona, index }: { persona: (typeof PERSONAS)[number]; in
         href={`/chat?persona=${persona.id}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="group relative flex flex-col h-full rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
-        style={{
-          boxShadow: hovered
-            ? `0 20px 60px -10px ${acc.glow}, 0 0 0 1px color-mix(in srgb, var(--border) 60%, transparent)`
-            : `0 1px 2px 0 rgba(0,0,0,0.06), 0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent)`,
-        }}
+        className="group relative flex flex-col h-full rounded-3xl overflow-hidden border border-white/60 dark:border-zinc-800/50 bg-white/65 dark:bg-zinc-950/20 hover:bg-white/85 dark:hover:bg-zinc-900/40 shadow-[0_8px_32px_0_rgba(148,163,184,0.01)] hover:shadow-[0_16px_40px_rgba(148,163,184,0.04)] hover:-translate-y-1 transition-all duration-300"
       >
-        {/* Glass card background */}
-        <div className="absolute inset-0 glass rounded-3xl" />
-
-        {/* Gradient top accent bar */}
-        <div
-          className="relative h-1 w-full rounded-t-3xl"
-          style={{ background: `linear-gradient(90deg, ${acc.from}, ${acc.to})` }}
-        />
-
         {/* Ambient glow blob (visible on hover) */}
         <motion.div
-          className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl pointer-events-none"
-          style={{ background: acc.glow }}
-          animate={{ opacity: hovered ? 1 : 0 }}
+          className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl pointer-events-none opacity-45"
+          style={{ background: `radial-gradient(circle, ${acc.from}33 0%, transparent 70%)` }}
+          animate={{ opacity: hovered ? 0.65 : 0.25 }}
           transition={{ duration: 0.4 }}
         />
 
         {/* Content */}
-        <div className="relative flex flex-col gap-4 p-6 flex-1">
+        <div className="relative flex flex-col gap-5 p-7 flex-1">
           {/* Avatar + name row */}
           <div className="flex items-start gap-4">
             <div
-              className="relative w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-border/50"
-              style={{ background: `linear-gradient(135deg, ${acc.from}22, ${acc.to}33)` }}
+              className="relative w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-white/80 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/45"
+              style={{ boxShadow: `inset 0 0 20px ${acc.from}15` }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -133,25 +114,23 @@ function MentorCard({ persona, index }: { persona: (typeof PERSONAS)[number]; in
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-lg">{acc.emoji}</span>
-                <p className="text-sm font-bold text-foreground leading-tight">{persona.name}</p>
+                <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 leading-tight">{persona.name}</p>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{persona.role}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{persona.role}</p>
             </div>
           </div>
 
           {/* Description */}
-          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{persona.description}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-355 leading-relaxed line-clamp-3 font-medium">{persona.description}</p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5">
             {persona.tags.slice(0, 3).map(tag => (
               <span
                 key={tag}
-                className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/80 dark:bg-zinc-800/60 border border-white dark:border-zinc-700/80"
                 style={{
-                  background: `${acc.from}18`,
                   color: acc.from,
-                  border: `1px solid ${acc.from}30`,
                 }}
               >
                 {tag}
@@ -160,26 +139,25 @@ function MentorCard({ persona, index }: { persona: (typeof PERSONAS)[number]; in
           </div>
 
           {/* Sample question */}
-          <div className="mt-auto pt-4 border-t border-border/40">
-            <p className="text-[11px] text-muted-foreground/80 italic line-clamp-2">
+          <div className="mt-auto pt-4 border-t border-white/40 dark:border-zinc-800/40">
+            <p className="text-[11px] text-slate-500/80 dark:text-slate-450/80 italic line-clamp-2">
               &ldquo;{persona.suggestedQuestions[0]}&rdquo;
             </p>
           </div>
         </div>
 
         {/* CTA footer */}
-        <div className="relative px-6 pb-6">
-          <div
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl text-xs font-bold text-white transition-all duration-200 group-hover:brightness-105 group-hover:shadow-md"
-            style={{ background: `linear-gradient(135deg, ${acc.from}, ${acc.to})` }}
-          >
-            Start Learning
-            <motion.span
-              animate={{ x: hovered ? 4 : 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-              <ArrowRight className="w-3.5 h-3.5" />
-            </motion.span>
+        <div className="relative px-7 pb-6 mt-auto">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors duration-200">
+            <span>Start learning</span>
+            <div className="w-8 h-8 rounded-full border border-white/80 dark:border-zinc-700/80 bg-white/40 dark:bg-zinc-900/40 group-hover:border-slate-300 dark:group-hover:border-zinc-600 group-hover:bg-white/85 dark:group-hover:bg-zinc-800/85 flex items-center justify-center transition-all duration-200">
+              <motion.span
+                animate={{ x: hovered ? 2 : 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' as const }}
+              >
+                <ArrowRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+              </motion.span>
+            </div>
           </div>
         </div>
       </Link>
@@ -207,20 +185,19 @@ function ConvRow({ conv, index }: { conv: Conv; index: number }) {
     >
       <Link
         href={`/chat?persona=${conv.persona}`}
-        className="flex items-center gap-3.5 px-4 py-3 rounded-2xl hover:bg-secondary/50 transition-all duration-150 group"
+        className="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl hover:bg-white/80 dark:hover:bg-zinc-800/50 border border-transparent hover:border-white/60 dark:hover:border-zinc-700/40 transition-all duration-150 group"
       >
         <div
-          className="w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-border/50"
-          style={{ background: `linear-gradient(135deg, ${acc.from}22, ${acc.to}33)` }}
+          className="w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-white/60 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={persona?.avatar} alt={persona?.name} className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{conv.title}</p>
-          <p className="text-xs text-muted-foreground">{persona?.name}</p>
+          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{conv.title}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{persona?.name}</p>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0 text-muted-foreground">
+        <div className="flex items-center gap-1.5 shrink-0 text-slate-500 dark:text-slate-450">
           <span className="text-xs">{ago}</span>
           <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-150" />
         </div>
@@ -233,6 +210,7 @@ function ConvRow({ conv, index }: { conv: Conv; index: number }) {
 export default function DashboardPage() {
   const [conversations, setConversations] = React.useState<Conv[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
     fetch('/api/conversations')
@@ -242,90 +220,122 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const totalConvs  = conversations.length;
   const mentorsUsed = new Set(conversations.map(c => c.persona)).size;
   const recent      = conversations.slice(0, 5);
 
   return (
-    <RadialGlowBackground className="min-h-screen" glowColor="rgba(99, 102, 241, 0.15)">
-
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-tr from-rose-100/10 via-slate-50/80 dark:via-zinc-950 to-violet-100/10 font-sans transition-colors duration-200">
+      
+      {/* ── Dynamic Header (Fades from Transparent to Frosted Glass on scroll) ── */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? 'bg-white/60 dark:bg-zinc-950/45 backdrop-blur-md border-b border-white/80 dark:border-zinc-800/40 shadow-xs h-16'
+            : 'bg-transparent border-b border-transparent h-20'
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
-              <Brain className="w-4 h-4 text-background" />
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-xs transition-colors duration-300 ${
+              scrolled ? 'bg-slate-900 dark:bg-white' : 'bg-white'
+            }`}>
+              <Brain className={`w-4 h-4 transition-colors duration-300 ${
+                scrolled ? 'text-white dark:text-slate-900' : 'text-slate-900'
+              }`} />
             </div>
-            <span className="font-bold text-sm tracking-tight text-foreground">AI Mentor</span>
+            <span className={`font-extrabold text-sm tracking-tight transition-colors duration-300 ${
+              scrolled ? 'text-slate-800 dark:text-slate-200' : 'text-white drop-shadow-sm'
+            }`}>
+              AI Mentor
+            </span>
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
             <Link
               href="/chat"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-85 active:scale-95 transition-all duration-150 shadow-sm"
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-all duration-300 shadow-sm ${
+                scrolled
+                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90'
+                  : 'bg-white text-slate-900 hover:bg-white/95'
+              }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Open Chat
             </Link>
-            <ThemeToggle />
+            <ThemeToggle scrolled={scrolled} />
           </div>
         </div>
       </header>
 
-      <main id="main-content" className="relative max-w-6xl mx-auto px-6 py-16 space-y-20">
+      {/* ── Full Height Hero Video Section (Edge-to-Edge, Transparent Navbar Overlaid) ── */}
+      <section className="w-full h-screen overflow-hidden relative shadow-sm">
+        <video
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_055001_8e16d972-3b2b-441c-86ad-2901a54682f9.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        />
 
-        {/* ── Hero ── */}
-        <motion.section
-          initial="hidden"
-          animate="show"
-          variants={stagger}
-          className="text-center space-y-6"
-        >
-          <motion.div variants={fadeUp}>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass text-xs font-semibold text-muted-foreground border-0">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              Powered by Google Gemini 2.5 Flash · pgvector RAG
-            </span>
-          </motion.div>
+        {/* Top Vignette (Ensures header readability on bright frames) */}
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/35 to-transparent pointer-events-none" />
 
-          <motion.h1
-            variants={fadeUp}
-            className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-foreground"
+        {/* Simple & Clean Content Overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-black/15 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="max-w-3xl space-y-8 pointer-events-auto"
           >
-            Learn from<br />
-            <span
-              className="gradient-text"
-              style={{ backgroundImage: 'linear-gradient(135deg, #f97316 0%, #8b5cf6 50%, #10b981 100%)' }}
-            >
-              the best minds.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            className="max-w-lg mx-auto text-base md:text-lg text-muted-foreground leading-relaxed"
-          >
-            AI mentors inspired by India&rsquo;s top programming educators —
-            each with a distinct teaching philosophy, streamed in real-time.
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 pt-2">
-            <Link
-              href="/chat"
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-foreground text-background text-sm font-bold hover:opacity-85 active:scale-95 transition-all duration-200 shadow-lg"
-            >
-              Get Started <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/chat?persona=Suraj_jha_sir"
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass text-foreground text-sm font-semibold hover:bg-secondary/50 active:scale-95 transition-all duration-200"
-            >
-              <BookOpen className="w-4 h-4" /> Explore Mentors
-            </Link>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium tracking-tight text-white drop-shadow-md leading-[1.15] max-w-4xl mx-auto">
+              Learn coding from <br className="hidden sm:inline" />
+              <span className="font-serif italic font-light bg-gradient-to-r from-rose-200 via-purple-200 to-indigo-200 bg-clip-text text-transparent">
+                the absolute best.
+              </span>
+            </h1>
+            <p className="max-w-md mx-auto text-xs sm:text-sm text-slate-100/90 font-medium drop-shadow-xs leading-relaxed">
+              Connect with interactive AI personas styled closely after India&rsquo;s most popular coding educators. Get personalized feedback, code reviews, and explanations.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+              <Link
+                href="/chat"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-white text-slate-900 text-xs font-extrabold hover:bg-white/95 active:scale-95 transition-all duration-200 shadow-md"
+              >
+                Get Started <ArrowRight className="w-4 h-4 text-slate-900" />
+              </Link>
+              <Link
+                href="#main-content"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold hover:bg-white/20 active:scale-95 transition-all duration-200"
+              >
+                <BookOpen className="w-4 h-4 text-slate-200" /> Explore Mentors
+              </Link>
+            </div>
           </motion.div>
-        </motion.section>
+        </div>
+
+        {/* Bottom smooth blending gradient fading into the page's pastel/dark background */}
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-50 dark:from-zinc-950 via-slate-50/75 dark:via-zinc-950/75 to-transparent pointer-events-none" />
+      </section>
+
+      {/* Main Content Area with Generous Spacing / Breathing Space */}
+      <main id="main-content" className="relative max-w-6xl mx-auto px-6 py-24 md:py-36 space-y-28 md:space-y-40">
 
         {/* ── Stats ── */}
         <motion.section
@@ -333,7 +343,7 @@ export default function DashboardPage() {
           whileInView="show"
           viewport={{ once: true, margin: '-80px' }}
           variants={stagger}
-          className="grid grid-cols-2 md:grid-cols-4 gap-3"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
         >
           <StatPill icon={MessageSquare} value={String(totalConvs)}       label="Total conversations" />
           <StatPill icon={Users}         value={`${mentorsUsed} / 4`}     label="Mentors explored" />
@@ -342,15 +352,15 @@ export default function DashboardPage() {
         </motion.section>
 
         {/* ── Mentor grid ── */}
-        <section className="space-y-6">
-          <div className="flex items-end justify-between">
+        <section className="space-y-8 max-w-5xl mx-auto">
+          <div className="flex items-end justify-between px-2 pb-2">
             <div>
-              <h2 className="text-2xl font-bold text-foreground tracking-tight">Choose your mentor</h2>
-              <p className="text-sm text-muted-foreground mt-1">Each mentor has a unique teaching style</p>
+              <h2 className="text-3xl font-serif font-bold text-slate-800 dark:text-slate-100 tracking-normal">Choose your mentor</h2>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">Each mentor has a unique teaching style & RAG database</p>
             </div>
             <Link
               href="/chat"
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors duration-150"
+              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1 transition-colors duration-150"
             >
               Open chat <ChevronRight className="w-3.5 h-3.5" />
             </Link>
@@ -361,10 +371,10 @@ export default function DashboardPage() {
             whileInView="show"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
           >
-            {PERSONAS.map((p, i) => (
-              <MentorCard key={p.id} persona={p} index={i} />
+            {PERSONAS.map((p) => (
+              <MentorCard key={p.id} persona={p} />
             ))}
           </motion.div>
         </section>
@@ -375,41 +385,41 @@ export default function DashboardPage() {
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="space-y-5 pb-20"
+          className="space-y-6 max-w-5xl mx-auto pb-12"
         >
-          <motion.div variants={fadeUp} className="flex items-center justify-between">
+          <motion.div variants={fadeUp} className="flex items-center justify-between px-2 pb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center">
-                <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+              <div className="w-7 h-7 rounded-xl bg-white/50 dark:bg-zinc-900/50 border border-white/60 dark:border-zinc-800/60 flex items-center justify-center">
+                <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </div>
-              <h2 className="text-xl font-bold text-foreground">Recent conversations</h2>
+              <h2 className="text-2xl font-serif font-bold text-slate-800 dark:text-slate-100 tracking-normal">Recent conversations</h2>
             </div>
             {recent.length > 0 && (
-              <Link href="/chat" className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-150 flex items-center gap-1">
+              <Link href="/chat" className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors duration-150 flex items-center gap-1">
                 View all <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             )}
           </motion.div>
 
-          <motion.div variants={fadeUp} className="rounded-3xl glass overflow-hidden">
+          <motion.div variants={fadeUp} className="rounded-3xl border border-white/50 dark:border-zinc-800/50 bg-white/50 dark:bg-zinc-950/20 backdrop-blur-md overflow-hidden shadow-[0_8px_32px_0_rgba(148,163,184,0.02)]">
             {loading ? (
               <div className="p-10 space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-12 rounded-xl animate-shimmer rounded-2xl" style={{ animationDelay: `${i * 0.15}s` }} />
+                  <div key={i} className="h-12 rounded-xl bg-white/40 dark:bg-zinc-800/40 border border-white/60 dark:border-zinc-700/60 animate-shimmer" style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
               </div>
             ) : recent.length === 0 ? (
               <div className="p-14 flex flex-col items-center gap-4 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-muted-foreground/50" />
+                <div className="w-14 h-14 rounded-2xl bg-white/50 dark:bg-zinc-900/50 border border-white/60 dark:border-zinc-800/60 flex items-center justify-center">
+                  <MessageSquare className="w-6 h-6 text-slate-400 dark:text-slate-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">No conversations yet</p>
-                  <p className="text-xs text-muted-foreground mt-1">Pick a mentor above to start learning</p>
+                  <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">No conversations yet</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-455 mt-1">Pick a mentor above to start learning</p>
                 </div>
                 <Link
                   href="/chat"
-                  className="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-foreground text-background text-xs font-bold hover:opacity-85 active:scale-95 transition-all duration-150"
+                  className="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 active:scale-95 transition-all duration-150 shadow-sm"
                 >
                   Start your first chat <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
@@ -417,15 +427,15 @@ export default function DashboardPage() {
             ) : (
               <motion.div
                 variants={stagger}
-                className="p-2 divide-y divide-border/40"
+                className="p-2 divide-y divide-white/40 dark:divide-zinc-850"
               >
                 {recent.map((c, i) => <ConvRow key={c.id} conv={c} index={i} />)}
               </motion.div>
             )}
 
             {recent.length > 0 && (
-              <div className="border-t border-border/40 p-3 text-center">
-                <Link href="/chat" className="text-xs text-muted-foreground hover:text-foreground font-semibold transition-colors">
+              <div className="border-t border-white/40 dark:border-zinc-800/40 p-3 text-center">
+                <Link href="/chat" className="text-xs text-slate-500 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200 font-bold transition-colors">
                   View all conversations →
                 </Link>
               </div>
@@ -434,6 +444,6 @@ export default function DashboardPage() {
         </motion.section>
 
       </main>
-    </RadialGlowBackground>
+    </div>
   );
 }

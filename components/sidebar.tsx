@@ -7,16 +7,15 @@ import {
   Plus,
   MessageSquare,
   Trash2,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeft,
+  PanelLeftClose,
   Sun,
   Moon,
   Bot,
   LayoutDashboard,
 } from 'lucide-react';
 import { useTheme } from './theme-provider';
-import { PERSONAS, Persona } from '../lib/prompts';
-
+import { PERSONAS } from '../lib/prompts';
 
 interface SidebarProps {
   activePersonaId: string;
@@ -42,33 +41,32 @@ export function Sidebar({
 
   return (
     <motion.aside
-      className={cn(
-        'h-screen bg-card border-r border-border flex flex-col z-30 shrink-0 select-none relative transition-all duration-300',
-        isCollapsed ? 'w-16' : 'w-76'
-      )}
-      layout="position"
+      className="h-screen bg-card/40 backdrop-blur-md border-r border-border/50 flex flex-col z-30 shrink-0 select-none relative"
+      animate={{ width: isCollapsed ? 64 : 280 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
-      {/* Header with Logo */}
-      <div className="p-4 flex items-center justify-between border-b border-border min-h-16">
-        {!isCollapsed && (
+      {/* Header with Brand Logo & Dashboard navigation */}
+      <div className="p-4 flex items-center justify-between border-b border-border/40 min-h-16 shrink-0">
+        {!isCollapsed ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-2.5 font-bold text-lg tracking-tight text-foreground"
+            exit={{ opacity: 0 }}
+            className="flex items-center gap-2.5 font-bold text-sm tracking-tight text-foreground"
           >
             <Bot className="w-5 h-5 text-primary" />
             <span>AI Mentor</span>
           </motion.div>
-        )}
-        {isCollapsed && (
+        ) : (
           <div className="w-full flex justify-center">
             <Bot className="w-5 h-5 text-primary" />
           </div>
         )}
+
         {!isCollapsed && (
           <Link
             href="/"
-            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-150"
+            className="p-1.5 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150"
             aria-label="Go to Dashboard"
             title="Dashboard"
           >
@@ -77,12 +75,12 @@ export function Sidebar({
         )}
       </div>
 
-      {/* Action Button: New Chat */}
-      <div className="p-3">
+      {/* Action Button: Start a New Chat */}
+      <div className="p-3 shrink-0">
         <button
           onClick={onNewChat}
           className={cn(
-            'w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-150 shadow-sm border border-border/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-hidden',
+            'w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-foreground text-background font-bold text-xs hover:opacity-90 active:scale-95 transition-all duration-150 shadow-sm border border-border/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-hidden',
             isCollapsed ? 'p-2' : ''
           )}
           aria-label="Start a new chat session"
@@ -92,21 +90,16 @@ export function Sidebar({
         </button>
       </div>
 
-      {/* Collapsible Persona Switcher - displays 4 personas in a row */}
-      <div className="px-3 py-2 border-b border-border">
+      {/* Collapsible Mentor Switcher */}
+      <div className="px-3 py-2 border-b border-border/40 shrink-0">
         {!isCollapsed && (
-          <div className="mb-2 px-1 flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <div className="mb-2 px-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
               Mentors
             </span>
           </div>
         )}
-        <div
-          className={cn(
-            'flex gap-1.5 justify-between items-center',
-            isCollapsed ? 'flex-col py-2' : 'flex-row'
-          )}
-        >
+        <div className={`flex gap-1.5 justify-between items-center ${isCollapsed ? 'flex-col py-2' : 'flex-row'}`}>
           {PERSONAS.map((persona) => {
             const isActive = activePersonaId === persona.id;
             return (
@@ -114,24 +107,22 @@ export function Sidebar({
                 key={persona.id}
                 onClick={() => onSelectPersona(persona.id)}
                 className={cn(
-                  'relative rounded-full transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-hidden group',
+                  'relative rounded-full transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring outline-hidden group shrink-0',
                   isActive
-                    ? 'ring-2 ring-ring ring-offset-2 ring-offset-background scale-105'
+                    ? 'ring-2 ring-foreground ring-offset-2 ring-offset-background scale-105'
                     : 'opacity-70 hover:opacity-100 hover:scale-105'
                 )}
                 aria-label={`Switch persona to ${persona.name}`}
               >
-                {/* Avatar Image */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={persona.avatar}
                   alt={persona.name}
-                  className="w-10 h-10 rounded-full bg-muted border border-border select-none"
+                  className="w-10 h-10 rounded-full bg-muted border border-border/60 select-none"
                 />
                 
-                {/* Hover Tooltip when collapsed */}
                 {isCollapsed && (
-                  <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-popover border border-border text-popover-foreground text-xs py-1 px-2 rounded-md shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 whitespace-nowrap z-50 font-medium">
+                  <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-popover border border-border text-popover-foreground text-xs py-1.5 px-2.5 rounded-lg shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 whitespace-nowrap z-50 font-semibold">
                     {persona.name}
                   </div>
                 )}
@@ -141,34 +132,34 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Recent Conversations */}
+      {/* Recent Conversations Scrollable list */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
         {!isCollapsed && (
-          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block px-2 mb-2 select-none">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground block px-2 mb-2 select-none">
             Recent Conversations
           </span>
         )}
-        <div className="space-y-1 font-medium">
+        <div className="space-y-1 font-semibold">
           {conversations.map((chat) => {
             const isActive = activeConversationId === chat.id;
             return (
               <div
                 key={chat.id}
                 className={cn(
-                  'group flex items-center justify-between rounded-lg transition-colors-custom text-sm focus-within:ring-2 focus-within:ring-ring outline-hidden',
+                  'group flex items-center justify-between rounded-xl transition-all duration-150 text-xs focus-within:ring-2 focus-within:ring-ring outline-hidden',
                   isActive
-                    ? 'bg-secondary text-secondary-foreground'
-                    : 'hover:bg-secondary/50 text-muted-foreground hover:text-foreground'
+                    ? 'bg-secondary text-foreground'
+                    : 'hover:bg-secondary/40 text-muted-foreground hover:text-foreground'
                 )}
               >
                 <button
                   onClick={() => onSelectConversation(chat.id)}
-                  className="flex-1 flex items-center gap-2.5 py-2 px-2.5 text-left truncate focus:outline-hidden"
+                  className="flex-1 flex items-center gap-2.5 py-2.5 px-3 text-left truncate focus:outline-hidden"
                   aria-label={`Open conversation: ${chat.title}`}
                 >
-                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                   {!isCollapsed && (
-                    <span className="truncate pr-1">{chat.title}</span>
+                    <span className="truncate pr-1 font-medium">{chat.title}</span>
                   )}
                 </button>
 
@@ -178,7 +169,7 @@ export function Sidebar({
                       e.stopPropagation();
                       onDeleteConversation(chat.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:text-destructive p-1.5 mr-1 rounded-md hover:bg-border/50 transition-all duration-150 focus:outline-hidden"
+                    className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:text-destructive p-1.5 mr-1.5 rounded-lg hover:bg-border/40 transition-all duration-150 focus:outline-hidden"
                     aria-label={`Delete conversation ${chat.title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -189,39 +180,37 @@ export function Sidebar({
           })}
 
           {conversations.length === 0 && !isCollapsed && (
-            <div className="text-xs text-muted-foreground text-center py-6 select-none font-medium">
+            <div className="text-[11px] text-muted-foreground text-center py-8 select-none font-medium">
               No recent chats…
             </div>
           )}
         </div>
       </div>
 
-      {/* Footer controls: Collapse Toggle, Theme, Settings */}
-      <div className="p-3 border-t border-border flex flex-col gap-2 mt-auto">
+      {/* Footer controls: Theme toggle, settings and Sidebar Collapse button */}
+      <div className="p-3 border-t border-border/40 flex flex-col gap-2 mt-auto shrink-0">
         <div className="flex items-center justify-between">
-          {/* Theme Toggle Button */}
+          {/* Theme Switcher */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden relative group"
+            className="p-2 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden relative group"
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            role="switch"
-            aria-checked={theme === 'dark'}
           >
-            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            {theme === 'light' ? <Moon className="w-4.5 h-4.5" /> : <Sun className="w-4.5 h-4.5" />}
             {isCollapsed && (
-              <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-popover border border-border text-popover-foreground text-xs py-1 px-2 rounded-md shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 whitespace-nowrap z-50 font-medium">
+              <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-popover border border-border text-popover-foreground text-xs py-1.5 px-2.5 rounded-lg shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 whitespace-nowrap z-50 font-semibold">
                 Toggle Theme
               </div>
             )}
           </button>
 
-          {/* Sidebar Collapse Button */}
+          {/* Collapsible Action Trigger (Shadcn spec PanelLeft Close) */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden"
+            className="p-2 rounded-lg hover:bg-secondary/60 text-muted-foreground hover:text-foreground transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring outline-hidden"
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {isCollapsed ? <PanelLeft className="w-4.5 h-4.5" /> : <PanelLeftClose className="w-4.5 h-4.5" />}
           </button>
         </div>
       </div>
@@ -229,7 +218,7 @@ export function Sidebar({
   );
 }
 
-// Inline fallback for the class merger to avoid import bugs if utils.ts isn't ready
+// Inline fallback for layout class joiner
 function cn(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }

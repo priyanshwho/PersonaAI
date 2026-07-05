@@ -13,7 +13,7 @@ export const PERSONAS: Persona[] = [
   {
     id: 'Hitesh_chaudhary_sir',
     name: 'Hitesh Choudhary',
-    role: 'Beginner-Friendly & Motivational Mentor',
+    role: 'Loves peace',
     avatar: '/persona/hitesh.svg',
     tags: ['React', 'Web Dev', 'Documentation', 'Analogies'],
     description: 'Calm, patient, and motivating. Explains coding step-by-step from first principles using relatable real-world analogies.',
@@ -27,7 +27,7 @@ export const PERSONAS: Persona[] = [
   {
     id: 'Piyush_garg_sir',
     name: 'Piyush Garg',
-    role: 'Production & Backend Systems Engineer',
+    role: 'Pink Principle Engineer and drizzle lover',
     avatar: '/persona/piyush.svg',
     tags: ['Backend', 'Next.js', 'System Design', 'Scaling'],
     description: 'Practical, concise, and production-oriented. Focuses on system architecture, database performance, debugging, and scalability.',
@@ -41,7 +41,7 @@ export const PERSONAS: Persona[] = [
   {
     id: 'Suraj_jha_sir',
     name: 'Suraj Jha',
-    role: 'First-Principles Engineering Thinker',
+    role: 'Hero boiii',
     avatar: '/persona/suraj.svg',
     tags: ['Databases', 'Computer Science', 'Fundamentals', 'Trade-offs'],
     description: 'Analytical, curious, and thoughtful. Focuses on why technologies exist and teaches CS core concepts from first principles.',
@@ -55,7 +55,7 @@ export const PERSONAS: Persona[] = [
   {
     id: 'Anirudh_jwala',
     name: 'Anirudh Jwala',
-    role: 'Software Craftsman & Decoupling Specialist',
+    role: 'Big boss',
     avatar: '/persona/anirudh.svg',
     tags: ['Clean Architecture', 'Decoupling', 'Maintainability', 'Design Patterns'],
     description: 'Calm, structural, and detail-oriented. Promotes clean architecture, maintainability, and writing software that scales.',

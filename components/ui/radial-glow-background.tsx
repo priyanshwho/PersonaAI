@@ -64,7 +64,7 @@ export function RadialGlowBackground({
       <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Glow 1 */}
         <div 
-          className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[120px] opacity-25 dark:opacity-20 animate-pulse"
+          className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[160px] opacity-15 dark:opacity-8 animate-pulse"
           style={{
             background: 'radial-gradient(circle, #f97316 0%, transparent 70%)',
             animationDuration: '8s',
@@ -72,7 +72,7 @@ export function RadialGlowBackground({
         />
         {/* Glow 2 */}
         <div 
-          className="absolute top-[20%] right-[-10%] w-[45vw] h-[45vw] rounded-full blur-[120px] opacity-20 dark:opacity-15"
+          className="absolute top-[20%] right-[-10%] w-[45vw] h-[45vw] rounded-full blur-[160px] opacity-12 dark:opacity-6"
           style={{
             background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)',
             animation: 'pulse 12s infinite alternate',
@@ -80,7 +80,7 @@ export function RadialGlowBackground({
         />
         {/* Glow 3 */}
         <div 
-          className="absolute bottom-[-10%] left-[20%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-15 dark:opacity-10"
+          className="absolute bottom-[-10%] left-[20%] w-[40vw] h-[40vw] rounded-full blur-[140px] opacity-10 dark:opacity-4"
           style={{
             background: 'radial-gradient(circle, #10b981 0%, transparent 70%)',
             animation: 'pulse 10s infinite alternate-reverse',
@@ -91,14 +91,14 @@ export function RadialGlowBackground({
       {/* Interactive cursor glow */}
       {interactive && (
         <div
-          className="absolute rounded-full pointer-events-none blur-[100px] transition-opacity duration-500 ease-out"
+          className="absolute rounded-full pointer-events-none blur-[130px] transition-opacity duration-500 ease-out"
           style={{
-            width: '450px',
-            height: '450px',
+            width: '400px',
+            height: '400px',
             background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
-            left: `${mousePos.x - 225}px`,
-            top: `${mousePos.y - 225}px`,
-            opacity: opacity,
+            left: `${mousePos.x - 200}px`,
+            top: `${mousePos.y - 200}px`,
+            opacity: opacity * 0.7, // Reduce maximum opacity a bit
           }}
           aria-hidden="true"
         />

@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Lora, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '../components/theme-provider';
 
-const inter = Inter({
+const lora = Lora({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-lora',
+  display: 'swap',
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
   display: 'swap',
 });
 
@@ -22,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={`${lora.variable} ${jakarta.variable}`}>
       <body className="antialiased min-h-screen bg-background text-foreground transition-colors duration-200 font-sans">
         <a href="#main-content" className="skip-link">
           Skip to main content
